@@ -1,0 +1,25 @@
+body, canvas, h1, h2, h3, h4, h5, h6, hr, p, dl, dt, dd, ul, ol, li, form, button, input, textarea, th, td {
+    margin: 0;
+    padding: 0
+}
+
+body, html
+{
+    display:block;
+    margin: 0!important;
+    padding: 0!important;
+    width: 100%;
+    height: 100%;
+    max-width: 1024px;
+    background-color: #2D3132;
+}
+
+.stage{
+    background-color: #FFFFFF;
+    color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border : 0;
+}

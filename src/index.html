@@ -2,9 +2,83 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1,maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <title>Delta德雅-智能数显技术</title>
+    <link rel="stylesheet" href="css/app-0.0.1.css">
+
+    <script src="js/easeljs-0.7.1.min.js"></script>
+    <script src="js/preloadjs-0.4.1.min.js"></script>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            var canvas, stage;
+            var images;
+            var img;
+            var loader;
+            var width, height;
+            function init() {
+                canvas = document.getElementById("enterStage");
+                resize();
+                console.log(canvas.width);
+                console.log(canvas.height);
+
+                stage = new createjs.Stage(canvas);
+                images = images||{};
+
+
+                loader = new createjs.LoadQueue(true, "images/");
+                loader.on("fileload", handleFileLoad, this);
+                loader.on("complete", handleComplete, this);
+                var manifest = [
+                    {src:"home.png", id:"homebg"}
+                ];
+                loader.loadManifest(manifest);
+            }
+
+            function resize() {
+                height = window.innerHeight;
+                width = window.innerWidth;
+
+                canvas.width = width;
+                canvas.height = height;
+            }
+
+            function handleFileLoad(o) {
+                //Alternatively you could store off the results as they get loaded.
+                //In this case we only have one image getting loaded
+                //if (o.type == "image") { images[o.id] = o.result; }
+            }
+
+            function handleComplete(event) {
+                /*getResult returns an object containing the contents of the object that was initially requested using loadFile or loadManifest, including:
+                 src: The source of the file that was requested.
+                 type: The type of file that was loaded. If it was not specified, this is auto-detected by PreloadJS using the file extension.
+                 id: The id of the loaded object. If it was not specified, the ID will be the same as the "src" property.
+                 data: Any arbitrary data that was specified, otherwise it will be undefined.
+                 */
+                var path = loader.getResult("homebg");
+                img = new createjs.Bitmap(path);
+                console.log(img.image.width);
+                console.log(img.image.height);
+                img.scaleX = width/img.image.width ;
+                img.scaleY = height/img.image.height ;
+                stage.addChild(img);
+                stage.update();
+            }
+
+            init();
+
+        });
+
+
+    </script>
 </head>
 <body>
-
+<canvas id="enterStage" class="stage">
+    当前浏览器不支持HTML5 Canvas，请更换您的浏览器
+</canvas>
 </body>
 </html>
