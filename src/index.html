@@ -16,9 +16,10 @@
         $(document).ready(function(){
             var canvas, stage;
             var images;
-            var img;
+            var homeBgImg;
             var loader;
             var width, height;
+            var scaleX, scaleY;
             function init() {
                 canvas = document.getElementById("enterStage");
                 resize();
@@ -33,7 +34,15 @@
                 loader.on("fileload", handleFileLoad, this);
                 loader.on("complete", handleComplete, this);
                 var manifest = [
-                    {src:"home.png", id:"homebg"}
+                    {src:"home.png", id:"homebg"},
+                    {src:"enter.png", id:"enterbtn"},
+                    {src:"arrow.png", id:"arrowbtn"},
+                    {src:"instruction.png", id:"instructionbg"},
+                    {src:"preview1.png", id:"preview1"},
+                    {src:"preview2.png", id:"preview2"},
+                    {src:"gameLevel1.png", id:"gameLevel1"},
+                    {src:"gameLevel2.png", id:"gameLevel2"},
+                    {src:"gameLevel3.png", id:"gameLevel3"}
                 ];
                 loader.loadManifest(manifest);
             }
@@ -59,13 +68,139 @@
                  id: The id of the loaded object. If it was not specified, the ID will be the same as the "src" property.
                  data: Any arbitrary data that was specified, otherwise it will be undefined.
                  */
-                var path = loader.getResult("homebg");
-                img = new createjs.Bitmap(path);
-                console.log(img.image.width);
-                console.log(img.image.height);
-                img.scaleX = width/img.image.width ;
-                img.scaleY = height/img.image.height ;
-                stage.addChild(img);
+                var homeBgPath = loader.getResult("homebg");
+                homeBgImg = new createjs.Bitmap(homeBgPath);
+                console.log(homeBgImg.image.width);
+                console.log(homeBgImg.image.height);
+                scaleX = width/homeBgImg.image.width ;
+                scaleY = height/homeBgImg.image.height ;
+                homeBgImg.scaleX = scaleX;
+                homeBgImg.scaleY = scaleY;
+                stage.addChild(homeBgImg);
+
+                var enterBtnPath = loader.getResult("enterbtn");
+                var enterBtnImage = new createjs.Bitmap(enterBtnPath);
+                enterBtnImage.scaleX = scaleX;
+                enterBtnImage.scaleY = scaleY;
+                enterBtnImage.x = (width - enterBtnImage.image.width * enterBtnImage.scaleX * 1.5) / 2 ;
+                enterBtnImage.y = (height - enterBtnImage.image.height * enterBtnImage.scaleY) * 0.85;
+                stage.addChild(enterBtnImage);
+
+                var arrowBtnPath = loader.getResult("arrowbtn");
+                var arrowBtnImage = new createjs.Bitmap(arrowBtnPath);
+                arrowBtnImage.scaleX = scaleX;
+                arrowBtnImage.scaleY = scaleY;
+                arrowBtnImage.x = (width + arrowBtnImage.image.width * arrowBtnImage.scaleX * 1.5)/2;
+                arrowBtnImage.y = (height - arrowBtnImage.image.height * arrowBtnImage.scaleY) * 0.85;
+                stage.addChild(arrowBtnImage);
+
+                enterBtnImage.on("click", function() {
+                    console.log("enterBtn clicked");
+                    instructionScene();
+                });
+
+                arrowBtnImage.on("click", function() {
+                    console.log("arrowBtn clicked");
+                    instructionScene();
+                });
+
+                stage.update();
+            }
+
+            function instructionScene() {
+                stage = new createjs.Stage(canvas);
+                stage.removeAllChildren();
+
+                var instructionBgPath = loader.getResult("instructionbg");
+                var instructionBgImg = new createjs.Bitmap(instructionBgPath);
+                instructionBgImg.on("click", function() {
+                    console.log("instruction clicked");
+                    gamePreview1Scene();
+                });
+                instructionBgImg.scaleX = scaleX;
+                instructionBgImg.scaleY = scaleY;
+                stage.addChild(instructionBgImg);
+
+                stage.update();
+            }
+
+            function gamePreview1Scene() {
+                stage = new createjs.Stage(canvas);
+                stage.removeAllChildren();
+
+                var preview1BgPath = loader.getResult("preview1");
+                var preview1BgImg = new createjs.Bitmap(preview1BgPath);
+                preview1BgImg.on("click", function() {
+                    gamePreview2Scene();
+                });
+                preview1BgImg.scaleX = scaleX;
+                preview1BgImg.scaleY = scaleY;
+                stage.addChild(preview1BgImg);
+
+                stage.update();
+            }
+
+            function gamePreview2Scene() {
+                stage = new createjs.Stage(canvas);
+                stage.removeAllChildren();
+
+                var preview2BgPath = loader.getResult("preview2");
+                var preview2BgImg = new createjs.Bitmap(preview2BgPath);
+                preview2BgImg.on("click", function() {
+                    gameLevel1Scene();
+                });
+                preview2BgImg.scaleX = scaleX;
+                preview2BgImg.scaleY = scaleY;
+                stage.addChild(preview2BgImg);
+
+                stage.update();
+            }
+
+            function gameLevel1Scene() {
+                stage = new createjs.Stage(canvas);
+                stage.removeAllChildren();
+
+                var gameBgPath = loader.getResult("gameLevel1");
+                var gameBgImg = new createjs.Bitmap(gameBgPath);
+                gameBgImg.on("click", function() {
+
+                });
+                gameBgImg.scaleX = scaleX;
+                gameBgImg.scaleY = scaleY;
+                stage.addChild(gameBgImg);
+
+                stage.update();
+            }
+
+            function gameLevel2Scence() {
+                stage = new createjs.Stage(canvas);
+                stage.removeAllChildren();
+
+                var gameBgPath = loader.getResult("gameLevel2");
+                var gameBgImg = new createjs.Bitmap(gameBgPath);
+                gameBgImg.on("click", function() {
+
+                });
+                gameBgImg.scaleX = scaleX;
+                gameBgImg.scaleY = scaleY;
+                stage.addChild(gameBgImg);
+
+                stage.update();
+            }
+
+            function gameLevel3Scence() {
+                stage = new createjs.Stage(canvas);
+                stage.removeAllChildren();
+
+                var gameBgPath = loader.getResult("gameLevel3");
+                var gameBgImg = new createjs.Bitmap(gameBgPath);
+                gameBgImg.on("click", function() {
+
+                });
+                gameBgImg.scaleX = scaleX;
+                gameBgImg.scaleY = scaleY;
+                stage.addChild(gameBgImg);
+
                 stage.update();
             }
 
