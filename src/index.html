@@ -16,7 +16,6 @@
         $(document).ready(function(){
             var canvas, stage;
             var images;
-            var homeBgImg;
             var loader;
             var width, height;
             var scaleX, scaleY;
@@ -25,11 +24,9 @@
                 resize();
                 console.log(canvas.width);
                 console.log(canvas.height);
-
                 stage = new createjs.Stage(canvas);
+
                 images = images||{};
-
-
                 loader = new createjs.LoadQueue(true, "images/");
                 loader.on("fileload", handleFileLoad, this);
                 loader.on("complete", handleComplete, this);
@@ -42,7 +39,11 @@
                     {src:"preview2.png", id:"preview2"},
                     {src:"gameLevel1.png", id:"gameLevel1"},
                     {src:"gameLevel2.png", id:"gameLevel2"},
-                    {src:"gameLevel3.png", id:"gameLevel3"}
+                    {src:"gameLevel3.png", id:"gameLevel3"},
+                    {src:"gameResultLevel1.png", id:"gameResultLevel1"},
+                    {src:"gameResultLevel2.png", id:"gameResultLevel2"},
+                    {src:"gameResultLevel3.png", id:"gameResultLevel3"},
+                    {src:"failure.png", id:"gameFailure"}
                 ];
                 loader.loadManifest(manifest);
             }
@@ -68,8 +69,15 @@
                  id: The id of the loaded object. If it was not specified, the ID will be the same as the "src" property.
                  data: Any arbitrary data that was specified, otherwise it will be undefined.
                  */
+                beginScene();
+            }
+
+            function beginScene() {
+
+                stage.removeAllChildren();
+
                 var homeBgPath = loader.getResult("homebg");
-                homeBgImg = new createjs.Bitmap(homeBgPath);
+                var homeBgImg = new createjs.Bitmap(homeBgPath);
                 console.log(homeBgImg.image.width);
                 console.log(homeBgImg.image.height);
                 scaleX = width/homeBgImg.image.width ;
@@ -108,7 +116,6 @@
             }
 
             function instructionScene() {
-                stage = new createjs.Stage(canvas);
                 stage.removeAllChildren();
 
                 var instructionBgPath = loader.getResult("instructionbg");
@@ -125,7 +132,6 @@
             }
 
             function gamePreview1Scene() {
-                stage = new createjs.Stage(canvas);
                 stage.removeAllChildren();
 
                 var preview1BgPath = loader.getResult("preview1");
@@ -141,7 +147,6 @@
             }
 
             function gamePreview2Scene() {
-                stage = new createjs.Stage(canvas);
                 stage.removeAllChildren();
 
                 var preview2BgPath = loader.getResult("preview2");
@@ -157,13 +162,12 @@
             }
 
             function gameLevel1Scene() {
-                stage = new createjs.Stage(canvas);
                 stage.removeAllChildren();
 
                 var gameBgPath = loader.getResult("gameLevel1");
                 var gameBgImg = new createjs.Bitmap(gameBgPath);
                 gameBgImg.on("click", function() {
-
+                    gameFailureScene();
                 });
                 gameBgImg.scaleX = scaleX;
                 gameBgImg.scaleY = scaleY;
@@ -172,8 +176,7 @@
                 stage.update();
             }
 
-            function gameLevel2Scence() {
-                stage = new createjs.Stage(canvas);
+            function gameLevel2Scene() {
                 stage.removeAllChildren();
 
                 var gameBgPath = loader.getResult("gameLevel2");
@@ -188,8 +191,7 @@
                 stage.update();
             }
 
-            function gameLevel3Scence() {
-                stage = new createjs.Stage(canvas);
+            function gameLevel3Scene() {
                 stage.removeAllChildren();
 
                 var gameBgPath = loader.getResult("gameLevel3");
@@ -200,6 +202,21 @@
                 gameBgImg.scaleX = scaleX;
                 gameBgImg.scaleY = scaleY;
                 stage.addChild(gameBgImg);
+
+                stage.update();
+            }
+
+            function gameFailureScene() {
+                stage.removeAllChildren();
+
+                var gameFailureBgPath = loader.getResult("gameFailure");
+                var gameFailureBgImg = new createjs.Bitmap(gameFailureBgPath);
+                gameFailureBgImg.on("click", function() {
+                    beginScene();
+                });
+                gameFailureBgImg.scaleX = scaleX;
+                gameFailureBgImg.scaleY = scaleY;
+                stage.addChild(gameFailureBgImg);
 
                 stage.update();
             }
