@@ -19,6 +19,9 @@
             var loader;
             var width, height;
             var scaleX, scaleY;
+
+            var pauseBar = null;
+            var ceilingY = null;
             function init() {
                 canvas = document.getElementById("enterStage");
                 resize();
@@ -109,7 +112,14 @@
 
                 arrowBtnImage.on("click", function() {
                     console.log("arrowBtn clicked");
-                    instructionScene();
+//                    instructionScene();
+                    gameLevel1Scene();
+                });
+
+                homeBgImg.on("click", function() {
+                    console.log("arrowBtn clicked");
+//                    instructionScene();
+                    gameLevel1Scene();
                 });
 
                 stage.update();
@@ -167,13 +177,61 @@
                 var gameBgPath = loader.getResult("gameLevel1");
                 var gameBgImg = new createjs.Bitmap(gameBgPath);
                 gameBgImg.on("click", function() {
-                    gameFailureScene();
+//                    gameFailureScene();
                 });
                 gameBgImg.scaleX = scaleX;
                 gameBgImg.scaleY = scaleY;
                 stage.addChild(gameBgImg);
 
+                pauseBar = new createjs.Shape();
+
+                pauseBar.on("click", function() {
+                    console.log("pauseBar clicked");
+//                    instructionScene();
+                    togglePause();
+                });
+
+                var x = parseInt(width * 0.1);
+                var y = parseInt(height * 0.96);
+                var w = parseInt(width * 0.25);
+
+                pauseBar.graphics.beginFill("orange").drawRoundRect(x, 0, w, 10, 10);
+                pauseBar.y = y;
+                stage.addChild(pauseBar);
+                createjs.Ticker.on("tick", tick);
+
                 stage.update();
+
+            }
+
+            function getCeilingY() {
+                if (ceilingY) {
+                    return ceilingY;
+                }
+                return function() {
+                    ceilingY = parseInt(height * 0.04);
+                    return ceilingY;
+                }();
+            }
+
+            function tick(event) {
+
+                if (!createjs.Ticker.getPaused()) {
+                    pauseBar.y -= 5;
+                    if (pauseBar.y < getCeilingY()) { pauseBar.y = getCeilingY(); }
+                }
+
+//                output.text = "getPaused()    = "+createjs.Ticker.getPaused()+"\n"+
+//                        "getTime(true)  = "+createjs.Ticker.getTime(true)+"\n"+
+//                        "getTime(false) = "+createjs.Ticker.getTime(false);
+
+                stage.update(event); // important!!
+            }
+
+            function togglePause() {
+                var paused = !createjs.Ticker.getPaused();
+                createjs.Ticker.setPaused(paused);
+//                document.getElementById("pauseBtn").value = paused ? "unpause" : "pause";
             }
 
             function gameLevel2Scene() {
