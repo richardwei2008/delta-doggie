@@ -42,3 +42,80 @@ body, html
     padding: 0;
     border : 0;
 }
+
+.page-submit {
+    background: url('../images/successbg.png') no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    width: 100%;
+    margin: 0px;
+    /*background-color: #000000!important;*/
+    /*height: auto;*/
+    /*padding-bottom: 60px;*/
+}
+.ui-content-custom {
+    min-height: 504px!important;
+    padding: 0!important;
+}
+.ui-input-custom {
+    height: 23px;
+    margin-left: 20px;
+    margin-top: 5px;
+}
+.ui-label-custom {
+    padding-top: 5px;
+}
+.submit-table-cell-font {
+    font-family: "黑体";
+    color: #FFFFFF;
+    font-size: 16px;
+}
+.middle {
+    position: relative;
+    margin: 95% auto 0 auto;
+}
+.bottom {
+    position: relative;
+    margin: 0 auto;
+    height: 32px;
+    width: 100%;
+}
+.ui-button-group-custom {
+    margin-top: 15px;
+    width: 100%;
+    height: 100%;
+}
+.submit-table {
+    height: 60px;
+}
+.submit-table-tbody {
+    height: 60px;
+}
+.submit-table-row {
+    height: 23px;
+}
+.submit-table-cell {
+    height: 23px;
+}
+.ui-button-custom-submit{
+    margin: 0 auto;
+    background: url('../images/submitbtn.png') no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    width: 108px;
+    height: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+.notice {
+    margin-top: 10px;
+    font-family: "黑体";
+    color: #FFFFFF;
+    font-size: 14px;
+}
