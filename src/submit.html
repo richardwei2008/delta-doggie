@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <title>Delta德雅-智能数显技术</title>
+
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.4.min.css">
+    <link rel="stylesheet" href="css/app-0.0.1.css">
+    <link rel="stylesheet" type="text/css" href="css/loader.css">
+
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
+    <script src="js/beyond.common.js"></script>
+    <script src="js/beyond.jquery.extension-1.0.js"></script>
+    <script src="js/beyond.wechat.js"></script>
+
+    <script src="js/app.wechat.share-0.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".loader").fadeOut("slow");
+
+            function retry() {
+                return (function() {
+                    window.location.href = 'http://' + window.location.hostname + '/doggie/' + 'index.html';
+                    window.event.returnValue = false;
+                    return false;
+                }());
+            }
+
+            $("#submit").bind("click", function(){
+                var name = $.trim($('#name').val());
+                if ($.isEmptyObject(name)) {
+                    alert("请填写姓名");
+                    return;
+                }
+                var cellphone =  $.trim($('#contact').val());
+                if ($.isEmptyObject(cellphone) || cellphone.length !== 11) {
+                    alert("请完整填写11位手机号码：（XXX-XXXX-XXXX）");
+                    return;
+                }
+                var accessToken = $.getUrlParam('accessToken');
+                $.ajax({
+                    async: false,
+                    url: 'server/service/TokenService.php',
+                    type: "POST",
+                    data : JSON.stringify({method : 'POST', type : 'UPDATE', name : name, cellphone : cellphone, accessToken : accessToken}),
+                    dataType : "json",
+                    timeout: 3000,
+                    success: function (response) {
+                        if ($.isEmptyObject(response.accessToken)) {
+                            $("#errorMsg").html("服务器繁忙，<br>请稍后再来！");
+                            document.getElementById('messageMask').style.display='block';
+                            return;
+                        }
+                        $("#errorMsg").html(response.message);
+                        document.getElementById('messageMask').style.display='block';
+                        var token = response.accessToken;
+                        setTimeout(retry, 5000);
+                        return;
+                    },
+                    error : function (xhr, textStatus, errorThrown) {
+                        $("#errorMsg").html("服务器繁忙，<br>请稍后再来！");
+                        document.getElementById('messageMask').style.display='block';
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="loader"></div>
+<div id="messageMask"  class="message-mask">
+    <!--onClick="document.getElementById('messageMask').style.display='none';"-->
+    <div id="errorBox" class="message-content" align="center">
+        <div style="float:right; width:20px; height:20px;cursor:hand;background-image:url('images/close.png');background-repeat: no-repeat;"></div>
+        <div id="errorMsg" class="message-font" align="center">
+            错误提示！
+        </div>
+    </div>
+</div>
+<div id="page" data-role="page" class="page-submit" data-theme="d">
+    <div class="ui-content-custom" data-role="content"  align="center" >
+        <div class="middle"  align="center">
+            <div>
+                <table class="submit-table"  align="center">
+                    <tbody class="submit-table-tbody">
+                    <tr class="submit-table-row">
+                        <td class="submit-table-cell-font"><div class="ui-label-custom ">姓&nbsp;&nbsp;&nbsp;&nbsp;名</div></td>
+                        <td class="submit-table-cell"><input id="name" data-role="none" class="ui-input-custom" type="text" maxlength="50" required></td>
+                    </tr>
+                    <tr class="submit-table-row">
+                        <td class="submit-table-cell-font"><div class="ui-label-custom ">联系方式</div></td>
+                        <td class="submit-table-cell"><input id="contact" data-role="none" class="ui-input-custom" type="text" minlength="11"  maxlength="11" required></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="notice">
+            <p>注：活动结束后，将由德雅工作人员就奖品 <br>领取事宜与您取得联系，请如实填写信息。</p>
+        </div>
+        <div class="bottom" align="center">
+            <table class="ui-button-group-custom" align="center">
+                <tr>
+                    <td><div id="submit" class="ui-button-custom-submit" align="center"></div></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

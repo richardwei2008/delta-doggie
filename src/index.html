@@ -14,20 +14,33 @@
     <script src="js/tweenjs-0.5.1.min.js"></script>
     <script src="js/preloadjs-0.4.1.min.js"></script>
     <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/freeze-touch-move.js"></script>
 
     <script src="js/beyond.common.js"></script>
     <script src="js/beyond.wechat.js"></script>
 
-    <script src="js/app-1.0.0.js"></script>
+    <script src="js/app.wechat.share-0.1.1.js"></script>
     <script>
 
-
     </script>
+    <script src="js/app-1.0.0.js"></script>
 </head>
-<body>
+<body >
 <div class="loader"></div>
-<canvas id="enterStage" class="stage">
-    当前浏览器不支持HTML5 Canvas，请更换您的浏览器
-</canvas>
+<div id="horizontal" style="display: none;"></div>
+<div id="messageMask" onClick="document.getElementById('messageMask').style.display='none';" class="message-mask">
+    <!--onClick="document.getElementById('messageMask').style.display='none';"-->
+    <div id="errorBox" class="message-content" align="center">
+        <div style="float:right; width:20px; height:20px;cursor:hand;background-image:url('images/close.png');background-repeat: no-repeat;"></div>
+        <div id="errorMsg" class="message-font" align="center">
+            错误提示！
+        </div>
+    </div>
+</div>
+<div id="page" data-role="page" data-theme="d">
+    <canvas id="enterStage" class="stage">
+        当前浏览器不支持HTML5 Canvas，请更换您的浏览器
+    </canvas>
+</div>
 </body>
 </html>

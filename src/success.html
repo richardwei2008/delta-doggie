@@ -15,45 +15,23 @@
     <script src="js/jquery-1.11.1.min.js"></script>
     <script src="js/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
     <script src="js/beyond.common.js"></script>
+    <script src="js/beyond.jquery.extension-1.0.js"></script>
     <script src="js/beyond.wechat.js"></script>
+
+    <script src="js/app.wechat.share-0.1.1.js"></script>
     <script>
         $(document).ready(function() {
             $(".loader").fadeOut("slow");
-            $("#page").height = window.innerHeight;
+
+
         });
     </script>
 </head>
 <body>
 <div class="loader"></div>
-<div id="page" data-role="page" class="page-submit" data-theme="d">
-    <div class="ui-content-custom" data-role="content"  align="center" >
-        <div class="middle"  align="center">
-            <div>
-                <table class="submit-table"  align="center">
-                    <tbody class="submit-table-tbody">
-                    <tr class="submit-table-row">
-                        <td class="submit-table-cell-font"><div class="ui-label-custom ">姓&nbsp;&nbsp;&nbsp;&nbsp;名</div></td>
-                        <td class="submit-table-cell"><input id="name" data-role="none" class="ui-input-custom" type="text" maxlength="50" required></td>
-                    </tr>
-                    <tr class="submit-table-row">
-                        <td class="submit-table-cell-font"><div class="ui-label-custom ">联系方式</div></td>
-                        <td class="submit-table-cell"><input id="contact" data-role="none" class="ui-input-custom" type="text" maxlength="50" required></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="notice">
-            <p>注：活动结束后，将由德雅工作人员就奖品 <br>领取事宜与您取得联系，请如实填写信息。</p>
-        </div>
-        <div class="bottom" align="center">
-            <table class="ui-button-group-custom" align="center">
-                <tr>
-                    <td><div class="ui-button-custom-submit" align="center"></div></td>
-                </tr>
-            </table>
-        </div>
-    </div>
+
+<div id="page" data-role="page" class="page-success" data-theme="d">
+
 </div>
 </body>
 </html>

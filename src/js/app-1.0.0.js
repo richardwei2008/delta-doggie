@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    var ROOT = "doggie";
     var canvas, stage;
     var images;
     var loader;
@@ -6,13 +7,68 @@ $(document).ready(function(){
     var scaleX, scaleY;
 
     var pauseBar = null;
+    var upperBar = null;
+    var lowerBar = null;
     var ceilingY = null;
+    var floorY = null;
     var currentLevel = 1;
+    var maximumLevel = 9;
+
+    var levelLowerThreshold = null;
+    var levelUpperThreshold = null;
+
+    window.onload = function () {
+        orientationchange();
+        window.onorientationchange = function () {
+            orientationchange();
+        }
+    };
+    function orientationchange() {
+        if (window.orientation == undefined) {
+            return;
+        }
+        if (window.orientation == 0 || window.orientation == 180) {
+            //竖屏
+            document.getElementById("horizontal").style.display = 'none';
+        } else {
+            //横屏
+            document.getElementById("horizontal").style.display = 'block';
+        }
+        resizeGame();
+    }
+    // update canvas size
+    function resizeGame() {
+        canvas = document.getElementById("enterStage");
+
+
+        if (window.innerHeight == 568) {
+            window.innerHeight = 504;
+        }
+
+        height = window.innerHeight;
+        width = window.innerWidth;
+//        if (canvas.width < window.innerWidth) {
+            canvas.width = window.innerWidth;
+//        }
+
+//        if (canvas.height < window.innerHeight) {
+            canvas.height = window.innerHeight;
+//        }
+//        alert("Window width x height " + window.innerWidth +" x "+ window.innerHeight);
+//        alert("width x height " + canvas.width +" x "+ canvas.height);
+
+    }
+
+//    window.addEventListener('resize', resizeGame, false);
+
     function init() {
         canvas = document.getElementById("enterStage");
-        resize();
+        resizeGame();
+
         console.log(canvas.width);
         console.log(canvas.height);
+
+//        alert("width x height " + canvas.width +" x "+ canvas.height);
         stage = new createjs.Stage(canvas);
         createjs.Touch.enable(stage);
 
@@ -22,30 +78,26 @@ $(document).ready(function(){
         loader.on("complete", handleComplete, this);
         var manifest = [
             {src:"fonts/DS-DIGI.TTF", id:"DIGI"},
-            {src:"images/home.png", id:"homebg"},
-            {src:"images/enter.png", id:"enterbtn"},
-            {src:"images/arrow.png", id:"arrowbtn"},
-            {src:"images/instruction.png", id:"instructionbg"},
-            {src:"images/preview1.png", id:"preview1"},
-            {src:"images/preview2.png", id:"preview2"},
-            {src:"images/gameLevel1.png", id:"gameLevel1"},
-            {src:"images/gameLevel2.png", id:"gameLevel2"},
-            {src:"images/gameLevel3.png", id:"gameLevel3"},
-            {src:"images/gameResultLevel1.png", id:"gameResultLevel1"},
-            {src:"images/gameResultLevel2.png", id:"gameResultLevel2"},
-            {src:"images/gameResultLevel3.png", id:"gameResultLevel3"},
-            {src:"images/failure.png", id:"gameFailure"},
-            {src:"images/submit.png", id:"gameSuccess"}
+            {src:"home.png", id:"homebg"},
+            {src:"enter.png", id:"enterbtn"},
+            {src:"arrow.png", id:"arrowbtn"},
+            {src:"instruction.png", id:"instructionbg"},
+            {src:"preview1.png", id:"preview1"},
+            {src:"preview2.png", id:"preview2"},
+            {src:"temperature.png", id:"temperatureId"},
+            {src:"gameLevelBlue.png", id:"gameLevel1"},
+            {src:"gameLevelPink.png", id:"gameLevel2"},
+            {src:"gameLevelRed.png", id:"gameLevel3"},
+            {src:"gameLevelHardBlue.png", id:"gameHardLevel1"},
+            {src:"gameLevelHardPink.png", id:"gameHardLevel2"},
+            {src:"gameLevelHardRed.png", id:"gameHardLevel3"},
+            {src:"gameResultLevel1.png", id:"gameResultLevel1"},
+            {src:"gameResultLevel2.png", id:"gameResultLevel2"},
+            {src:"gameResultLevel3.png", id:"gameResultLevel3"},
+            {src:"failure.png", id:"gameFailure"},
+            {src:"submit.png", id:"gameSuccess"}
         ];
         loader.loadManifest(manifest);
-    }
-
-    function resize() {
-        height = window.innerHeight;
-        width = window.innerWidth;
-
-        canvas.width = width;
-        canvas.height = height;
     }
 
     function handleFileLoad(o) {
@@ -76,41 +128,15 @@ $(document).ready(function(){
         console.log(homeBgImg.image.height);
         scaleX = width/homeBgImg.image.width ;
         scaleY = height/homeBgImg.image.height ;
+        console.log("ScaleX: " + scaleX);
+        console.log("ScaleY: " + scaleY);
+
         homeBgImg.scaleX = scaleX;
         homeBgImg.scaleY = scaleY;
         stage.addChild(homeBgImg);
-
-        var enterBtnPath = loader.getResult("enterbtn");
-        var enterBtnImage = new createjs.Bitmap(enterBtnPath);
-        enterBtnImage.scaleX = scaleX;
-        enterBtnImage.scaleY = scaleY;
-        enterBtnImage.x = (width - enterBtnImage.image.width * enterBtnImage.scaleX * 1.5) / 2 ;
-        enterBtnImage.y = (height - enterBtnImage.image.height * enterBtnImage.scaleY) * 0.85;
-        stage.addChild(enterBtnImage);
-
-        var arrowBtnPath = loader.getResult("arrowbtn");
-        var arrowBtnImage = new createjs.Bitmap(arrowBtnPath);
-        arrowBtnImage.scaleX = scaleX;
-        arrowBtnImage.scaleY = scaleY;
-        arrowBtnImage.x = (width + arrowBtnImage.image.width * arrowBtnImage.scaleX * 1.5)/2;
-        arrowBtnImage.y = (height - arrowBtnImage.image.height * arrowBtnImage.scaleY) * 0.85;
-        stage.addChild(arrowBtnImage);
-
-        enterBtnImage.on("click", function() {
-            console.log("enterBtn clicked");
-            instructionScene();
-        });
-
-        arrowBtnImage.on("click", function() {
-            console.log("arrowBtn clicked");
-//                    instructionScene();
-            instructionScene();
-        });
-
         homeBgImg.on("click", function() {
             console.log("arrowBtn clicked");
-//                    instructionScene();
-            gameLevelScene(currentLevel);
+            instructionScene();
         });
 
         stage.update();
@@ -153,7 +179,7 @@ $(document).ready(function(){
         var preview2BgPath = loader.getResult("preview2");
         var preview2BgImg = new createjs.Bitmap(preview2BgPath);
         preview2BgImg.on("click", function() {
-            gameLevel1Scene();
+            gameLevelScene(0);
         });
         preview2BgImg.scaleX = scaleX;
         preview2BgImg.scaleY = scaleY;
@@ -162,19 +188,25 @@ $(document).ready(function(){
         stage.update();
     }
 
-    function gameLevelScene(currentLevel) {
+    function gameLevelScene(category) {
+        console.log("Game Level Scene: " + category);
         stage.removeAllChildren();
-        var levelColor = "#3BAEED";
         var currentLevelBackgroundId = "gameLevel1";
-        var barHeight = 25;
-        if (currentLevel === 2) {
-            levelColor = "#F281C0";
-            currentLevelBackgroundId = "gameLevel2";
-            barHeight = 25;
-        } else if (currentLevel === 3) {
-            levelColor = "#F92036";
-            currentLevelBackgroundId = "gameLevel3";
-            barHeight = 20;
+        var barHeight = 10;
+        if (currentLevel > 6) {
+            currentLevelBackgroundId = "gameHardLevel1";
+            if (category === 1) {
+                currentLevelBackgroundId = "gameHardLevel2";
+            } else if (category === 2) {
+                currentLevelBackgroundId = "gameHardLevel3";
+            }
+        } else {
+            currentLevelBackgroundId = "gameLevel1";
+            if (category === 1) {
+                currentLevelBackgroundId = "gameLevel2";
+            } else if (category === 2) {
+                currentLevelBackgroundId = "gameLevel3";
+            }
         }
 
         var gameBgPath = loader.getResult(currentLevelBackgroundId);
@@ -186,60 +218,129 @@ $(document).ready(function(){
         gameBgImg.scaleY = scaleY;
         stage.addChild(gameBgImg);
 
+        var temperaturePath = loader.getResult("temperatureId");
+        var temperatureImg = new createjs.Bitmap(temperaturePath);
+        temperatureImg.on("click", function() {
+            console.log("Tap Game Level Scene: " + category);
+            tap(category);
+        });
+        temperatureImg.x = parseInt(74/640 * width);
+        temperatureImg.y = parseInt(34/1008 * height);
+        temperatureImg.scaleX = scaleX;
+        temperatureImg.scaleY = scaleY;
+        stage.addChild(temperatureImg);
+
         var x = parseInt(width * 0.1);
         var y = parseInt(height * 0.96);
         var w = parseInt(width * 0.25);
 
-//                pauseBar = new createjs.Rectangle(x, 0, w, 15);
         pauseBar = new createjs.Shape();
+        pauseBar.up = true;
         pauseBar.setBounds(x, 0, w, 15);
         pauseBar.graphics.beginFill("orange").drawRoundRect(x, 0, w, barHeight, 10);
         pauseBar.y = y;
         pauseBar.removeAllEventListeners("click");
-        pauseBar.on("click", function() {
-            console.log("pauseBar clicked");
-//                    instructionScene();
-            togglePause();
-            createjs.Ticker.removeAllEventListeners("tick");
-
-            pauseBar.graphics.beginFill(levelColor);
-
-            var number = parseInt(52 - 37 * (1 - (height * 0.92 - (pauseBar.y - height * 0.02)) / (height * 0.92)));
-            console.log("Y " + pauseBar.y);
-            console.log("Temperature " + number);
-
-            var temperature = new createjs.Text(number+"", "20px DIGI", levelColor);
-            temperature.x = width * 0.64;
-            temperature.y = height * 0.08;
-            stage.addChild(temperature);
-            stage.update();
-            wait(gameSceneResult, number, currentLevel);
-        });
-
         stage.addChild(pauseBar);
+
+        if (currentLevel > 6) {
+            upperBar = new createjs.Shape();
+            upperBar.up = true;
+            upperBar.setBounds(x, 0, w, 15);
+            upperBar.graphics.beginFill("#F92036").drawRoundRect(x, 0, w, barHeight, 6);
+            upperBar.y = getLevel1();
+            upperBar.removeAllEventListeners("click");
+            stage.addChild(upperBar);
+
+            lowerBar = new createjs.Shape();
+            lowerBar.up = true;
+            lowerBar.setBounds(x, 0, w, 15);
+            lowerBar.graphics.beginFill("#3BAEED").drawRoundRect(x, 0, w, barHeight, 6);
+            lowerBar.y = getLevel2();
+            lowerBar.removeAllEventListeners("click");
+            stage.addChild(lowerBar);
+        }
+
         createjs.Ticker.setPaused(false);
         createjs.Ticker.removeAllEventListeners("tick");
         createjs.Ticker.on("tick", function(e) {
-            var speed = 3;
-            var levelThreshold = getLevel1();
-            if (currentLevel === 2) {
-                speed = 5;
-                levelThreshold = getLevel2();
+
+            levelLowerThreshold = getLevel1();
+            levelUpperThreshold = height;
+            if (category === 1) {
+                levelLowerThreshold = getLevel2();
+                levelUpperThreshold = getLevel1();
             }
-            if (currentLevel === 3) {
-                speed = 5;
-                levelThreshold = getLevel3();
+            if (category === 2) {
+                levelLowerThreshold = getLevel3();
+                levelUpperThreshold = getLevel2();
             }
-            tick(e, speed, levelThreshold);
+            var speed = 8;
+            speed = parseInt(speed * 2 * scaleY);
+            speed *=  currentLevel;
+            tick(e, speed, levelLowerThreshold, levelUpperThreshold);
         });
 //                var temperature = new createjs.Text("20", "20px Helvetica", "#3BAEED");
 //                temperature.x = width * 0.64;
 //                temperature.y = height * 0.08;
 //                stage.addChild(temperature);
+        stage.update();
+    }
 
+    function tap(category) {
+        var levelColor = "#3BAEED";
+        if (category === 1) {
+            levelColor = "#F281C0";
+        } else if (category === 2) {
+            levelColor = "#F92036";
+        }
 
+        console.log("pauseBar clicked");
+//                    instructionScene();
+        togglePause();
+        createjs.Ticker.removeAllEventListeners("tick");
+
+        pauseBar.graphics.beginFill(levelColor);
+
+        var number = parseInt(52 - 37 * (1 - (height * 0.92 - (pauseBar.y - height * 0.05)) / (height * 0.95)));
+        console.log("Y " + pauseBar.y);
+        console.log("Temperature " + number);
+
+        var size = parseInt(20 * 2 * scaleX);
+        var temperature = new createjs.Text(number+"", size + "px DIGI", levelColor);
+        temperature.x = width * 0.645;
+        temperature.y = height * 0.08;
+        stage.addChild(temperature);
         stage.update();
 
+        if (currentLevel > 6) {
+            if (category === 0 && (pauseBar.y < lowerBar.y)) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Threshold" + upperBar.y + " : " + lowerBar.y);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else if (category === 2 && (pauseBar.y > upperBar.y)) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Threshold" + upperBar.y + " : " + lowerBar.y);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else if (category === 1 && (pauseBar.y < upperBar.y || pauseBar.y > lowerBar.y)) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Threshold" + upperBar.y + " : " + lowerBar.y);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else {
+                wait(gameSceneResult, number, category);
+            }
+        } else {
+            if (pauseBar.y > levelUpperThreshold || pauseBar.y < levelLowerThreshold) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Threshold" + levelUpperThreshold + " : " + levelLowerThreshold);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else {
+                wait(gameSceneResult, number, category);
+            }
+        }
     }
 
     function getCeilingY() {
@@ -247,10 +348,22 @@ $(document).ready(function(){
             return ceilingY;
         }
         return function() {
-            ceilingY = parseInt(height * 0.01);
+            ceilingY = parseInt(height * 0.05);
             return ceilingY;
         }();
     }
+
+    function getFloorY() {
+        if (floorY) {
+            return floorY;
+        }
+        return function() {
+            floorY = parseInt(height * 0.95);
+            return floorY;
+        }();
+    }
+
+
 
     var level1 = null;
     function getLevel1() {
@@ -285,55 +398,38 @@ $(document).ready(function(){
         }();
     }
 
-    function tick(event, speed, levelThreshold) {
-
+//    var pauseBarUp = true;
+//    var upperBarUp = true;
+//    var lowerBarUp = true;
+    function tick(event, speed, levelLowerThreshold, levelUpperThreshold) {
         if (!createjs.Ticker.getPaused()) {
-            pauseBar.y -= speed;
-            if (pauseBar.y < getCeilingY()) {
-                pauseBar.y = getCeilingY();
+            move(pauseBar, getCeilingY(), getFloorY(), speed);
+            if (currentLevel > 6) {
+                var speed2 =  10;
+                speed2 = parseInt(speed2 * 2 * scaleY);
+                move(upperBar, parseInt(getLevel2() - height * 0.15), parseInt(getLevel2() + height * 0.15), speed2);
+                move(lowerBar, parseInt(getLevel1() - height * 0.15), parseInt(getLevel1() + height * 0.15), speed2);
             }
-            if (pauseBar.y < levelThreshold) {
-                console.log("Exceed " + pauseBar.y);
-                createjs.Ticker.removeAllEventListeners("tick");
-                gameFailureScene();
-                return;
-            }
-//                    switch (currentLevel) {
-//                        case 1:
-//                            if (pauseBar.y < getLevel1()) {
-//                                console.log("Exceed " + pauseBar.y);
-//                                createjs.Ticker.removeAllEventListeners("tick");
-//                                gameFailureScene();
-//                                return;
-//                            }
-//                            break;
-//                        case 2:
-//                            if (pauseBar.y < getLevel2()) {
-//                                console.log("Exceed " + pauseBar.y);
-//                                createjs.Ticker.removeAllEventListeners("tick");
-//                                gameFailureScene();
-//                                return;
-//                            }
-//                            break;
-//                        case 3:
-//                            if (pauseBar.y < getLevel3()) {
-//                                console.log("Exceed " + pauseBar.y);
-//                                createjs.Ticker.removeAllEventListeners("tick");
-//                                gameFailureScene();
-//                                return;
-//                            }
-//                            break;
-//                        default :
-//                            break;
-//                    }
         }
-//                output.text = "getPaused()    = "+createjs.Ticker.getPaused()+"\n"+
-//                        "getTime(true)  = "+createjs.Ticker.getTime(true)+"\n"+
-//                        "getTime(false) = "+createjs.Ticker.getTime(false);
-        console.log("update event");
         stage.update(event); // important!!
+    }
 
-
+    function move(pauseBar, ceiling, floor, speed) {
+        return function() {
+            if (pauseBar.up) {
+                pauseBar.y = pauseBar.y - speed;
+            } else {
+                pauseBar.y = pauseBar.y + speed;
+            }
+            if (pauseBar.y < ceiling) {
+                pauseBar.y = ceiling;
+                pauseBar.up = false;
+            }
+            if (pauseBar.y > floor) {
+                pauseBar.y = floor;
+                pauseBar.up = true;
+            }
+        }(pauseBar, ceiling, floor, speed);
     }
 
     function togglePause() {
@@ -343,33 +439,40 @@ $(document).ready(function(){
     }
 
 
-    var interval = null;
-    function wait(fn, number, currentLevel) {
-        var tempFunc = function(number, currentLevel) {
-            interval = setInterval(function() {
+    var intervalId = null;
+    function wait(fn, number, category) {
+        var tempFunc = function(number, category) {
+            intervalId = setTimeout(function() {
                 return function() {
-                    fn(number, currentLevel);
-                }(number, currentLevel);
+                    fn(number, category);
+                }(number, category);
             }, 1000);
         };
-        return tempFunc(number, currentLevel);
+        return tempFunc(number, category);
     }
 
-    function gameSceneResult(number, currentLevel) {
-        clearInterval(interval);
+    function gameSceneResult(number, category) {
+        console.log("Result Category: " + category);
+        clearTimeout(intervalId);
         stage.removeAllChildren();
-        var currentLevelResultBackgroundId ="gameResultLevel1";
-        if (currentLevel === 2) {
-            currentLevelResultBackgroundId = "gameResultLevel2"
-        } else if (currentLevel === 3) {
-            currentLevelResultBackgroundId = "gameResultLevel3"
+        var categoryBackgroundId ="gameResultLevel1";
+        if (category  === 1) {
+            categoryBackgroundId = "gameResultLevel2"
+        } else if (category === 2) {
+            categoryBackgroundId = "gameResultLevel3"
         }
-        var gameBgPath = loader.getResult(currentLevelResultBackgroundId);
+        console.log("Result Scene: " + categoryBackgroundId);
+        var gameBgPath = loader.getResult(categoryBackgroundId);
         var gameBgImg = new createjs.Bitmap(gameBgPath);
         gameBgImg.on("click", function() {
             currentLevel += 1;
-            if (currentLevel <= 3) {
-                gameLevelScene(currentLevel);
+            console.log("Current Level: " + currentLevel);
+            if (currentLevel <= 9) {
+                var random = parseInt(Math.random() * 9);
+                category = (parseInt(Math.random() * 9)) % 3;
+                console.log("Current Random: " + random);
+                console.log("Current Category: " + category);
+                gameLevelScene(category);
             } else {
                 gameSuccessScene();
             }
@@ -377,9 +480,9 @@ $(document).ready(function(){
         gameBgImg.scaleX = scaleX;
         gameBgImg.scaleY = scaleY;
         stage.addChild(gameBgImg);
-
-        var temperature = new createjs.Text(number, "36px DIGI", "#000000");
-        temperature.x = width * 0.465;
+        var size = parseInt(36 * 2 * scaleX);
+        var temperature = new createjs.Text(number, size + "px DIGI", "#000000");
+        temperature.x = width * 0.46;
         temperature.y = height * 0.15;
         stage.addChild(temperature);
 
@@ -387,24 +490,33 @@ $(document).ready(function(){
     }
 
     function gameSuccessScene() {
-        clearInterval(interval);
-        stage.removeAllChildren();
+        return function() {
+            clearTimeout(intervalId);
+            stage.removeAllChildren();
 
-        var gameSuccessBgPath = loader.getResult("gameSuccess");
-        var gameSuccessBgImg = new createjs.Bitmap(gameSuccessBgPath);
-        gameSuccessBgImg.on("click", function() {
-            beginScene();
-        });
-        gameSuccessBgImg.scaleX = scaleX;
-        gameSuccessBgImg.scaleY = scaleY;
-        stage.addChild(gameSuccessBgImg);
+//        var gameSuccessBgPath = loader.getResult("gameSuccess");
+//        var gameSuccessBgImg = new createjs.Bitmap(gameSuccessBgPath);
+//        gameSuccessBgImg.on("click", function() {
+//            beginScene();
+//        });
+//        gameSuccessBgImg.scaleX = scaleX;
+//        gameSuccessBgImg.scaleY = scaleY;
+//        stage.addChild(gameSuccessBgImg);
 
-        stage.update();
+//        stage.update();
+            redirectToPageWithAccessTokenParam(accessToken, "submit.html");
+        }();
+
     }
 
 
     function gameFailureScene() {
+        currentLevel = 1;
+        clearTimeout(intervalId);
         stage.removeAllChildren();
+        if (pauseBar !== null) {
+            pauseBar.removeAllEventListeners("click");
+        }
 
         var gameFailureBgPath = loader.getResult("gameFailure");
         var gameFailureBgImg = new createjs.Bitmap(gameFailureBgPath);
@@ -418,5 +530,54 @@ $(document).ready(function(){
         stage.update();
     }
 
+    function requireToken() {
+        var token = null;
+        $.ajax({
+            async: false,
+            url: 'server/service/TokenService.php',
+            type: "POST",
+            data : JSON.stringify({method : 'POST', type : 'READ'}),
+            dataType : "json",
+            timeout: 3000,
+            success: function (response) {
+                if (!response.success) {
+                    $("#errorMsg").html(response.message);
+                    document.getElementById('messageMask').style.display='block';
+                }
+                if ($.isEmptyObject(response.accessToken)) {
+                    $("#errorMsg").html("服务器繁忙，<br>请稍后再来！");
+                    document.getElementById('messageMask').style.display='block';
+                }
+                token = response.accessToken;
+            },
+            error : function (xhr, textStatus, errorThrown) {
+                $("#errorMsg").html("服务器繁忙，<br>请稍后再来！");
+                document.getElementById('messageMask').style.display='block';
+            }
+        });
+        return token;
+    }
+    function formatRedirectUri(relativeTargetUri) {
+        return (function() {
+            return 'http://' + window.location.hostname + '/' + ROOT + '/' + relativeTargetUri;
+        }());
+    }
+    function formatRedirectUriWithAccessTokenParam (accessToken, relativeTargetUri) {
+        return  (function() {
+            return formatRedirectUri(relativeTargetUri) + '?'
+                + '&accessToken=' + encodeURI(accessToken);
+        }());
+    }
+    function redirectToPageWithAccessTokenParam (accessToken, relativeTargetUri) {
+        return (function() {
+            var redirectToUrl = formatRedirectUriWithAccessTokenParam(accessToken, relativeTargetUri);
+            window.location.href = redirectToUrl
+            window.event.returnValue = false;
+            return false;
+        }());
+    }
+
+    var accessToken = requireToken();
+//    alert("Token: " + accessToken);
     init();
 });
