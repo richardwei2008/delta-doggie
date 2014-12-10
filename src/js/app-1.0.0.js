@@ -78,24 +78,24 @@ $(document).ready(function(){
         loader.on("complete", handleComplete, this);
         var manifest = [
             {src:"fonts/DS-DIGI.TTF", id:"DIGI"},
-            {src:"home.png", id:"homebg"},
-            {src:"enter.png", id:"enterbtn"},
-            {src:"arrow.png", id:"arrowbtn"},
-            {src:"instruction.png", id:"instructionbg"},
-            {src:"preview1.png", id:"preview1"},
-            {src:"preview2.png", id:"preview2"},
-            {src:"temperature.png", id:"temperatureId"},
-            {src:"gameLevelBlue.png", id:"gameLevel1"},
-            {src:"gameLevelPink.png", id:"gameLevel2"},
-            {src:"gameLevelRed.png", id:"gameLevel3"},
-            {src:"gameLevelHardBlue.png", id:"gameHardLevel1"},
-            {src:"gameLevelHardPink.png", id:"gameHardLevel2"},
-            {src:"gameLevelHardRed.png", id:"gameHardLevel3"},
-            {src:"gameResultLevel1.png", id:"gameResultLevel1"},
-            {src:"gameResultLevel2.png", id:"gameResultLevel2"},
-            {src:"gameResultLevel3.png", id:"gameResultLevel3"},
-            {src:"failure.png", id:"gameFailure"},
-            {src:"submit.png", id:"gameSuccess"}
+            {src:"images/home.png", id:"homebg"},
+            {src:"images/enter.png", id:"enterbtn"},
+            {src:"images/arrow.png", id:"arrowbtn"},
+            {src:"images/instruction.png", id:"instructionbg"},
+            {src:"images/preview1.png", id:"preview1"},
+            {src:"images/preview2.png", id:"preview2"},
+            {src:"images/temperature.png", id:"temperatureId"},
+            {src:"images/gameLevelBlue.png", id:"gameLevel1"},
+            {src:"images/gameLevelPink.png", id:"gameLevel2"},
+            {src:"images/gameLevelRed.png", id:"gameLevel3"},
+            {src:"images/gameLevelHardBlue.png", id:"gameHardLevel1"},
+            {src:"images/gameLevelHardPink.png", id:"gameHardLevel2"},
+            {src:"images/gameLevelHardRed.png", id:"gameHardLevel3"},
+            {src:"images/gameResultLevel1.png", id:"gameResultLevel1"},
+            {src:"images/gameResultLevel2.png", id:"gameResultLevel2"},
+            {src:"images/gameResultLevel3.png", id:"gameResultLevel3"},
+            {src:"images/failure.png", id:"gameFailure"},
+            {src:"images/submit.png", id:"gameSuccess"}
         ];
         loader.loadManifest(manifest);
     }
@@ -258,6 +258,26 @@ $(document).ready(function(){
             lowerBar.y = getLevel2();
             lowerBar.removeAllEventListeners("click");
             stage.addChild(lowerBar);
+        } else if (currentLevel > 3) {
+            if (category === 0) {
+                lowerBar = null;
+                upperBar = new createjs.Shape();
+                upperBar.up = true;
+                upperBar.setBounds(x, 0, w, 15);
+                upperBar.graphics.beginFill("#3BAEED").drawRoundRect(x, 0, w, barHeight, 6);
+                upperBar.y = getLevel1();
+                upperBar.removeAllEventListeners("click");
+                stage.addChild(upperBar);
+            } else {
+                lowerBar = new createjs.Shape();
+                lowerBar.up = true;
+                lowerBar.setBounds(x, 0, w, 15);
+                lowerBar.graphics.beginFill("#F92036").drawRoundRect(x, 0, w, barHeight, 6);
+                lowerBar.y = getLevel2();
+                lowerBar.removeAllEventListeners("click");
+                stage.addChild(lowerBar);
+                upperBar = null;
+            }
         }
 
         createjs.Ticker.setPaused(false);
@@ -274,10 +294,10 @@ $(document).ready(function(){
                 levelLowerThreshold = getLevel3();
                 levelUpperThreshold = getLevel2();
             }
-            var speed = 8;
+            var speed = 9;
             speed = parseInt(speed * 2 * scaleY);
             speed *=  currentLevel;
-            tick(e, speed, levelLowerThreshold, levelUpperThreshold);
+            tick(e, speed, category);
         });
 //                var temperature = new createjs.Text("20", "20px Helvetica", "#3BAEED");
 //                temperature.x = width * 0.64;
@@ -311,7 +331,6 @@ $(document).ready(function(){
         temperature.y = height * 0.08;
         stage.addChild(temperature);
         stage.update();
-
         if (currentLevel > 6) {
             if (category === 0 && (pauseBar.y < lowerBar.y)) {
                 console.log("Position" + pauseBar.y);
@@ -326,6 +345,25 @@ $(document).ready(function(){
             } else if (category === 1 && (pauseBar.y < upperBar.y || pauseBar.y > lowerBar.y)) {
                 console.log("Position" + pauseBar.y);
                 console.log("Exceed Threshold" + upperBar.y + " : " + lowerBar.y);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else {
+                wait(gameSceneResult, number, category);
+            }
+        } else  if (currentLevel > 3) {
+            if (category === 0 && (pauseBar.y < upperBar.y)) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Upper Threshold" + " : " + upperBar.y);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else if (category === 2 && (pauseBar.y > lowerBar.y)) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Lower Threshold" + " : " + lowerBar.y);
+                createjs.Ticker.removeAllEventListeners("tick");
+                wait(gameFailureScene, number, category);
+            } else if (category === 1 && (pauseBar.y > levelUpperThreshold || pauseBar.y < lowerBar.y)) {
+                console.log("Position" + pauseBar.y);
+                console.log("Exceed Threshold" + levelUpperThreshold +  " : " + lowerBar.y);
                 createjs.Ticker.removeAllEventListeners("tick");
                 wait(gameFailureScene, number, category);
             } else {
@@ -401,17 +439,27 @@ $(document).ready(function(){
 //    var pauseBarUp = true;
 //    var upperBarUp = true;
 //    var lowerBarUp = true;
-    function tick(event, speed, levelLowerThreshold, levelUpperThreshold) {
-        if (!createjs.Ticker.getPaused()) {
-            move(pauseBar, getCeilingY(), getFloorY(), speed);
-            if (currentLevel > 6) {
-                var speed2 =  10;
-                speed2 = parseInt(speed2 * 2 * scaleY);
-                move(upperBar, parseInt(getLevel2() - height * 0.15), parseInt(getLevel2() + height * 0.15), speed2);
-                move(lowerBar, parseInt(getLevel1() - height * 0.15), parseInt(getLevel1() + height * 0.15), speed2);
+    function tick(event, speed, category) {
+        return function(event, speed, category) {
+            if (!createjs.Ticker.getPaused()) {
+                move(pauseBar, getCeilingY(), getFloorY(), speed);
+                if (currentLevel > 6) {
+                    var speed2 =  10;
+                    speed2 = parseInt(speed2 * 2 * scaleY);
+                    move(upperBar, parseInt(getLevel2() - height * 0.15), parseInt(getLevel2() + height * 0.15), speed2);
+                    move(lowerBar, parseInt(getLevel1() - height * 0.15), parseInt(getLevel1() + height * 0.15), speed2);
+                } else if (currentLevel > 3) {
+                    var speed2 =  10;
+                    speed2 = parseInt(speed2 * 2 * scaleY);
+                    if (category === 0) {
+                        move(upperBar, parseInt(getLevel1() - height * 0.15), parseInt(getLevel1() + height * 0.15), speed2);
+                    } else {
+                        move(lowerBar, parseInt(getLevel2() - height * 0.15), parseInt(getLevel2() + height * 0.15), speed2);
+                    }
+                }
             }
-        }
-        stage.update(event); // important!!
+            stage.update(event); // important!!
+        }(event, speed, category);
     }
 
     function move(pauseBar, ceiling, floor, speed) {
